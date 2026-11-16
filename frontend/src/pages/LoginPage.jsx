@@ -2,8 +2,8 @@
  * NexusLearn — Login Page
  */
 import React, { useState } from "react";
-import { useAuth } from "../../contexts/AuthContext";
-import { Button } from "../../components/atoms";
+import { useAuth } from "../contexts/AuthContext";
+import { Button } from "../components/atoms";
 
 export default function LoginPage({ onSuccess }) {
   const { login } = useAuth();

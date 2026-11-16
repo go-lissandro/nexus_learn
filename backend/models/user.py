@@ -42,6 +42,16 @@ class User(Base):
         foreign_keys="UserSession.user_id",
         cascade="all, delete-orphan"
     )
+    # Lados que faltavam: os outros modelos usam back_populates para estes nomes
+    progresses: Mapped[List["UserProgress"]] = relationship(
+        "UserProgress", back_populates="user", cascade="all, delete-orphan"
+    )
+    badges: Mapped[List["UserBadge"]] = relationship(
+        "UserBadge", back_populates="user", cascade="all, delete-orphan"
+    )
+    challenge_completions: Mapped[List["ChallengeCompletion"]] = relationship(
+        "ChallengeCompletion", back_populates="user", cascade="all, delete-orphan"
+    )
 
 
 class UserSession(Base):

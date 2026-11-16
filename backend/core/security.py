@@ -5,7 +5,7 @@ ainda está ativa no banco — revogação em tempo real.
 """
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
-from passlib.context import CryptContext
+import bcrypt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,16 +19,20 @@ SECRET_KEY = os.getenv("SECRET_KEY", "troque-esta-chave-em-producao")
 ALGORITHM = "HS256"
 TOKEN_EXPIRE_HOURS = 8
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 bearer_scheme = HTTPBearer()
 
 
+# bcrypt direto: o passlib 1.7.4 quebra com bcrypt>=5 ("password cannot be
+# longer than 72 bytes" já no primeiro hash). Os hashes $2b$ são compatíveis.
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    return bcrypt.hashpw(password.encode()[:72], bcrypt.gensalt()).decode()
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
+    try:
+        return bcrypt.checkpw(plain.encode()[:72], hashed.encode())
+    except ValueError:
+        return False
 
 
 def create_access_token(user_id: int, session_id: str) -> str:
