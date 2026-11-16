@@ -3,7 +3,7 @@ NexusLearn — Schemas Pydantic (validação de request/response)
 """
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
 # ─── AUTH ────────────────────────────────────────────────
@@ -94,6 +94,11 @@ class GamificationProgress(BaseModel):
     streak_days: int
     xp_to_next_level: int
     badges_count: int
+
+
+class XPAwardRequest(BaseModel):
+    user_id: int
+    amount: int = Field(..., ge=-10_000, le=10_000, description="XP a somar (negativo remove)")
 
 
 class LeaderboardEntry(BaseModel):
